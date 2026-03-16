@@ -19,7 +19,7 @@ La société Info-Tools développe et vend différents logiciels. Cet extranet p
 
 ## 📚 Documentation
  
-La documentation complète est disponible sur : **[whizpixel.github.io/web-ap](https://whizpixel.github.io/web-ap)**
+La documentation complète est disponible sur : **[whizpixel.github.io/web-doc](https://whizpixel.github.io/web-doc)**
 
 ---
 
