@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Documentation — InfoTools CRM Web</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black:     #0B090A;
+            --dark:      #161A1D;
+            --dark2:     #1e2328;
+            --red-deep:  #660708;
+            --red-mid:   #A4161A;
+            --red:       #BA181B;
+            --red-vivid: #E5383B;
+            --gray-warm: #B1A7A6;
+            --gray-light:#D3D3D3;
+            --off-white: #F5F3F4;
+            --white:     #FFFFFF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--black);
+            color: var(--off-white);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── AMBIENT ── */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -15%; left: -10%;
+            width: 55vw; height: 55vw;
+            background: radial-gradient(circle, rgba(186,24,27,0.14) 0%, transparent 65%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            width: 260px;
+            background: rgba(22,26,29,0.85);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(229,56,59,0.12);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid rgba(229,56,59,0.1);
+        }
+
+        .brand-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .brand-logo span { color: var(--red-vivid); }
+
+        .brand-logo::before {
+            content: '';
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--red-vivid);
+            box-shadow: 0 0 8px var(--red-vivid);
+            flex-shrink: 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%,100% { opacity:1; transform:scale(1); }
+            50% { opacity:0.5; transform:scale(0.75); }
+        }
+
+        .brand-sub {
+            font-size: 0.72rem;
+            color: var(--gray-warm);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0.75rem;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: rgba(177,167,166,0.5);
+            padding: 0 0.75rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.55rem 0.75rem;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--gray-warm);
+            transition: all 0.18s;
+            user-select: none;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(229,56,59,0.08);
+            color: var(--white);
+        }
+
+        .nav-item.active {
+            background: rgba(229,56,59,0.14);
+            border-color: rgba(229,56,59,0.2);
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        .nav-item .nav-icon {
+            width: 18px; height: 18px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .nav-item.active .nav-icon { opacity: 1; color: var(--red-vivid); }
+
+        .nav-badge {
+            margin-left: auto;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            background: rgba(229,56,59,0.2);
+            color: var(--red-vivid);
+            padding: 0.1rem 0.45rem;
+            border-radius: 20px;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(229,56,59,0.1);
+            font-size: 0.72rem;
+            color: rgba(177,167,166,0.4);
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* ── MAIN ── */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── PAGES ── */
+        .page {
+            display: none;
+            padding: 3rem;
+            max-width: 900px;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .page.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── TYPOGRAPHY ── */
+        .page-eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--red-vivid);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: var(--white);
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        h1 em {
+            font-style: normal;
+            color: var(--red-vivid);
+        }
+
+        h2 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            margin: 2rem 0 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        h2::before {
+            content: '';
+            display: block;
+            width: 3px; height: 20px;
+            background: var(--red-vivid);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        h3 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--off-white);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--gray-warm);
+            margin-bottom: 0.75rem;
+        }
+
+        .lead {
+            font-size: 1rem;
+            color: var(--off-white);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            max-width: 620px;
+        }
+
+        /* ── DIVIDER ── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, rgba(229,56,59,0.2), transparent);
+            margin: 2rem 0;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: rgba(22,26,29,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229,56,59,0.12);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .card:hover { border-color: rgba(229,56,59,0.28); }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--white);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title .dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--red-vivid);
+            box-shadow: 0 0 5px var(--red-vivid);
+        }
+
+        /* ── GRID ── */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+
+        /* ── FEATURE CARDS ── */
+        .feature-card {
+            background: rgba(22,26,29,0.6);
+            border: 1px solid rgba(229,56,59,0.1);
+            border-radius: 14px;
+            padding: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(229,56,59,0.3);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: rgba(229,56,59,0.12);
+            border: 1px solid rgba(229,56,59,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.85rem;
+            color: var(--red-vivid);
+        }
+
+        .feature-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: var(--white);
+            margin-bottom: 0.4rem;
+        }
+
+        .feature-desc {
+            font-size: 0.8rem;
+            color: var(--gray-warm);
+            line-height: 1.5;
+        }
+
+        /* ── CODE ── */
+        code {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.82rem;
+            background: rgba(229,56,59,0.08);
+            border: 1px solid rgba(229,56,59,0.15);
+            color: var(--red-vivid);
+            padding: 0.15rem 0.45rem;
+            border-radius: 5px;
+        }
+
+        pre {
+            background: rgba(11,9,10,0.8);
+            border: 1px solid rgba(229,56,59,0.15);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--off-white);
+            overflow-x: auto;
+            margin: 1rem 0;
+            line-height: 1.6;
+        }
+
+        pre .kw  { color: var(--red-vivid); }
+        pre .str { color: #86efac; }
+        pre .cm  { color: rgba(177,167,166,0.5); }
+        pre .fn  { color: #93c5fd; }
+
+        /* ── TABLE ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+
+        thead th {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray-warm);
+            padding: 0.65rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(229,56,59,0.15);
+        }
+
+        tbody td {
+            padding: 0.75rem 1rem;
+            color: var(--off-white);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        tbody tr:hover { background: rgba(229,56,59,0.04); }
+
+        td code { font-size: 0.75rem; }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-red   { background: rgba(229,56,59,0.15); border: 1px solid rgba(229,56,59,0.25); color: var(--red-vivid); }
+        .badge-green { background: rgba(34,197,94,0.1);  border: 1px solid rgba(34,197,94,0.2);  color: #86efac; }
+        .badge-blue  { background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2); color: #93c5fd; }
+        .badge-gray  { background: rgba(177,167,166,0.1);border: 1px solid rgba(177,167,166,0.2);color: var(--gray-warm); }
+
+        /* ── STEPS ── */
+        .steps { display: flex; flex-direction: column; gap: 0; }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .step-line {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(229,56,59,0.15);
+            border: 1px solid rgba(229,56,59,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--red-vivid);
+            flex-shrink: 0;
+        }
+
+        .step-connector {
+            flex: 1;
+            width: 1px;
+            background: rgba(229,56,59,0.15);
+            margin: 4px 0;
+            min-height: 24px;
+        }
+
+        .step-content {
+            padding-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .step-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+            margin-top: 0.3rem;
+        }
+
+        .step-desc {
+            font-size: 0.82rem;
+            color: var(--gray-warm);
+            line-height: 1.5;
+        }
+
+        /* ── ROUTE ROW ── */
+        .route-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 1rem;
+            border-radius: 9px;
+            border: 1px solid rgba(229,56,59,0.08);
+            margin-bottom: 0.5rem;
+            transition: background 0.15s;
+        }
+
+        .route-row:hover { background: rgba(229,56,59,0.04); }
+
+        .method {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .method-get    { background: rgba(96,165,250,0.12); color: #93c5fd; border: 1px solid rgba(96,165,250,0.2); }
+        .method-post   { background: rgba(34,197,94,0.1);  color: #86efac; border: 1px solid rgba(34,197,94,0.2); }
+        .method-put    { background: rgba(251,191,36,0.1); color: #fcd34d; border: 1px solid rgba(251,191,36,0.2); }
+        .method-delete { background: rgba(229,56,59,0.12); color: var(--red-vivid); border: 1px solid rgba(229,56,59,0.2); }
+
+        .route-path {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--off-white);
+            flex: 1;
+        }
+
+        .route-desc {
+            font-size: 0.78rem;
+            color: var(--gray-warm);
+        }
+
+        /* ── HERO BANNER ── */
+        .hero {
+            background: linear-gradient(135deg, rgba(102,7,8,0.3) 0%, rgba(22,26,29,0.8) 60%);
+            border: 1px solid rgba(229,56,59,0.18);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            right: -40px; top: -40px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(229,56,59,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(229,56,59,0.12);
+            border: 1px solid rgba(229,56,59,0.2);
+            color: var(--red-vivid);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .stack-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .pill {
+            background: rgba(22,26,29,0.8);
+            border: 1px solid rgba(229,56,59,0.15);
+            color: var(--gray-light);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        /* ── SECURITY ITEMS ── */
+        .security-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: rgba(22,26,29,0.5);
+            border: 1px solid rgba(229,56,59,0.1);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .security-icon {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            background: rgba(229,56,59,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--red-vivid);
+            flex-shrink: 0;
+        }
+
+        .security-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .security-desc {
+            font-size: 0.8rem;
+            color: var(--gray-warm);
+            line-height: 1.5;
+        }
+
+        /* ── SCREEN MOCKUP ── */
+        .mockup {
+            background: rgba(11,9,10,0.6);
+            border: 1px solid rgba(229,56,59,0.15);
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 1.25rem 0;
+        }
+
+        .mockup-bar {
+            background: rgba(22,26,29,0.8);
+            padding: 0.65rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(229,56,59,0.1);
+        }
+
+        .mockup-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+
+        .mockup-dot:nth-child(1) { background: #ff5f57; }
+        .mockup-dot:nth-child(2) { background: #febc2e; }
+        .mockup-dot:nth-child(3) { background: #28c840; }
+
+        .mockup-url {
+            margin-left: 0.5rem;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--gray-warm);
+            background: rgba(229,56,59,0.06);
+            border: 1px solid rgba(229,56,59,0.1);
+            padding: 0.2rem 0.75rem;
+            border-radius: 6px;
+        }
+
+        .mockup-body {
+            padding: 1.25rem;
+        }
+
+        .mockup-nav {
+            display: flex;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(229,56,59,0.1);
+            font-size: 0.78rem;
+        }
+
+        .mockup-nav span { color: var(--gray-warm); }
+        .mockup-nav span.active { color: var(--white); font-weight: 500; border-bottom: 2px solid var(--red-vivid); padding-bottom: 2px; }
+
+        .mockup-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.78rem;
+        }
+
+        .mockup-row .label { color: var(--off-white); }
+        .mockup-row .value { color: var(--red-vivid); font-family: 'DM Mono', monospace; }
+        .mockup-row .muted { color: var(--gray-warm); }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">Info<span>Tools</span></div>
+        <div class="brand-sub">Documentation CRM Web</div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+            <div class="nav-section-label">Introduction</div>
+            <div class="nav-item active" onclick="goTo('overview')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Vue d'ensemble
+            </div>
+            <div class="nav-item" onclick="goTo('stack')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Stack technique
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Fonctionnalités</div>
+            <div class="nav-item" onclick="goTo('dashboard')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                Dashboard
+            </div>
+            <div class="nav-item" onclick="goTo('appointments')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Rendez-vous
+            </div>
+            <div class="nav-item" onclick="goTo('products')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Produits
+            </div>
+            <div class="nav-item" onclick="goTo('clients')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Clients & Achats
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Technique</div>
+            <div class="nav-item" onclick="goTo('api')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                API REST
+                <span class="nav-badge">Sanctum</span>
+            </div>
+            <div class="nav-item" onclick="goTo('security')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Sécurité
+            </div>
+            <div class="nav-item" onclick="goTo('install')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                Installation
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">
+        BTS SIO · Session 2024<br>
+        Laravel 12 · PHP 8.4
+    </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+    <!-- PAGE: VUE D'ENSEMBLE -->
+    <div class="page active" id="page-overview">
+        <div class="page-eyebrow">01 — Introduction</div>
+        <h1>InfoTools<br><em>CRM Web</em></h1>
+        <p class="lead">Extranet CRM développé en Laravel pour les commerciaux d'InfoTools. Permet de gérer les rendez-vous, consulter les produits et suivre l'historique d'achats des clients.</p>
+
+        <div class="hero">
+            <div class="hero-tag">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Projet BTS SIO · Mission 2
+            </div>
+            <h2 style="margin:0 0 0.5rem;font-size:1.2rem;">Contexte InfoTools</h2>
+            <p style="max-width:500px;margin:0;">La société Info-Tools développe et vend différents logiciels. Cet extranet est destiné à ses commerciaux pour gérer leur activité de démarchage et de suivi client depuis le terrain.</p>
+            <div class="stack-pills">
+                <span class="pill">Laravel 12</span>
+                <span class="pill">PHP 8.4</span>
+                <span class="pill">MySQL</span>
+                <span class="pill">Tailwind CSS</span>
+                <span class="pill">Sanctum API</span>
+                <span class="pill">Blade</span>
+                <span class="pill">Vite</span>
+            </div>
+        </div>
+
+        <h2>Périmètre du projet</h2>
+        <div class="grid-3">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div class="feature-title">Rendez-vous</div>
+                <div class="feature-desc">Création, modification et suppression de rendez-vous clients avec tableau de bord personnalisé.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+                </div>
+                <div class="feature-title">Produits</div>
+                <div class="feature-desc">Catalogue des produits InfoTools avec nom, prix et description consultable par les commerciaux.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                </div>
+                <div class="feature-title">Clients & Achats</div>
+                <div class="feature-desc">Répertoire clients avec historique d'achats filtré par commercial (protection IDOR).</div>
+            </div>
+        </div>
+
+        <h2>Base de données</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Table</th>
+                    <th>Description</th>
+                    <th>Clés</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>users</code></td><td>Commerciaux authentifiés</td><td>—</td></tr>
+                <tr><td><code>appointments</code></td><td>Rendez-vous clients</td><td><code>user_id</code></td></tr>
+                <tr><td><code>products</code></td><td>Catalogue produits</td><td>—</td></tr>
+                <tr><td><code>clients</code></td><td>Clients InfoTools</td><td>—</td></tr>
+                <tr><td><code>purchases</code></td><td>Achats par client</td><td><code>user_id, client_id, product_id</code></td></tr>
+                <tr><td><code>audit_logs</code></td><td>Journalisation des actions</td><td><code>user_id, entity_type</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGE: STACK -->
+    <div class="page" id="page-stack">
+        <div class="page-eyebrow">02 — Technique</div>
+        <h1>Stack <em>technique</em></h1>
+        <p class="lead">Architecture MVC avec Laravel, API REST sécurisée via Sanctum et interface Blade avec Tailwind CSS.</p>
+
+        <h2>Architecture</h2>
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Modèle MVC Laravel</div>
+            <p>Le projet suit l'architecture MVC native de Laravel. Les routes web sont séparées des routes API. L'authentification web utilise les sessions, l'API utilise les tokens Sanctum.</p>
+        </div>
+
+        <pre><code><span class="cm">// Structure des routes</span>
+routes/
+├── <span class="str">web.php</span>      <span class="cm">← Dashboard, RDV, Produits, Clients (session)</span>
+├── <span class="str">api.php</span>      <span class="cm">← API REST sécurisée (Sanctum token)</span>
+└── <span class="str">auth.php</span>     <span class="cm">← Login / Register / Reset password</span>
+
+app/Http/Controllers/
+├── <span class="str">AppointmentController.php</span>
+├── <span class="str">ClientController.php</span>
+├── <span class="str">ProductController.php</span>
+└── Api/
+    ├── <span class="str">ProductController.php</span>
+    └── <span class="str">PurchaseController.php</span></code></pre>
+
+        <h2>Modèles & Relations</h2>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>User</div>
+                <p><code>hasMany</code> Appointment<br><code>hasMany</code> Purchase</p>
+            </div>
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Client</div>
+                <p><code>hasMany</code> Purchase</p>
+            </div>
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Product</div>
+                <p><code>hasMany</code> Purchase</p>
+            </div>
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Purchase</div>
+                <p><code>belongsTo</code> User<br><code>belongsTo</code> Client<br><code>belongsTo</code> Product</p>
+            </div>
+        </div>
+
+        <h2>Technologies utilisées</h2>
+        <table>
+            <thead><tr><th>Technologie</th><th>Usage</th><th>Version</th></tr></thead>
+            <tbody>
+                <tr><td>Laravel</td><td>Framework PHP MVC</td><td><span class="badge badge-red">12.x</span></td></tr>
+                <tr><td>PHP</td><td>Langage serveur</td><td><span class="badge badge-blue">8.4</span></td></tr>
+                <tr><td>MySQL</td><td>Base de données relationnelle</td><td><span class="badge badge-gray">5.7+</span></td></tr>
+                <tr><td>Laravel Sanctum</td><td>Authentification API par token</td><td><span class="badge badge-green">inclus</span></td></tr>
+                <tr><td>Tailwind CSS</td><td>Framework CSS utilitaire</td><td><span class="badge badge-blue">3.x</span></td></tr>
+                <tr><td>Vite</td><td>Bundler assets JS/CSS</td><td><span class="badge badge-gray">5.x</span></td></tr>
+                <tr><td>Blade</td><td>Moteur de templates Laravel</td><td><span class="badge badge-green">natif</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGE: DASHBOARD -->
+    <div class="page" id="page-dashboard">
+        <div class="page-eyebrow">03 — Fonctionnalités</div>
+        <h1>Dashboard</h1>
+        <p class="lead">Page d'accueil personnalisée après connexion. Affiche les KPIs du commercial connecté et ses prochains rendez-vous.</p>
+
+        <div class="mockup">
+            <div class="mockup-bar">
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+                <span class="mockup-url">application-web.test/dashboard</span>
+            </div>
+            <div class="mockup-body">
+                <div class="mockup-nav">
+                    <span class="active">Dashboard</span>
+                    <span>Rendez-vous</span>
+                    <span>Produits</span>
+                    <span>Clients</span>
+                </div>
+                <div class="mockup-row">
+                    <span class="label">RDV à venir</span>
+                    <span class="value">6</span>
+                </div>
+                <div class="mockup-row">
+                    <span class="label">Prochain RDV</span>
+                    <span class="muted">Société Dupont · 18/03/2026</span>
+                </div>
+                <div class="mockup-row">
+                    <span class="label">Accès rapide</span>
+                    <span class="muted">Mes RDV · Produits · Clients</span>
+                </div>
+            </div>
+        </div>
+
+        <h2>Contenu affiché</h2>
+        <div class="grid-2">
+            <div class="feature-card">
+                <div class="feature-title">KPI — RDV à venir</div>
+                <div class="feature-desc">Nombre de rendez-vous futurs du commercial connecté, avec affichage du prochain RDV (nom client + date).</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-title">Accès rapide</div>
+                <div class="feature-desc">Liens directs vers les principales sections : Mes RDV, Produits, Clients.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-title">Planning des RDV</div>
+                <div class="feature-desc">Liste des 6 prochains rendez-vous avec nom, date, notes et bouton de modification.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-title">Bouton + Nouveau RDV</div>
+                <div class="feature-desc">Accès direct au formulaire de création d'un rendez-vous depuis le header.</div>
+            </div>
+        </div>
+
+        <h2>Implémentation</h2>
+        <pre><code><span class="cm">// web.php</span>
+Route::<span class="fn">get</span>(<span class="str">'/dashboard'</span>, <span class="kw">function</span> (Request $request) {
+    $nextAppointments = Appointment::<span class="fn">where</span>(<span class="str">'user_id'</span>, $request-><span class="fn">user</span>()-><span class="fn">id</span>)
+        -><span class="fn">where</span>(<span class="str">'starts_at'</span>, <span class="str">'>='</span>, <span class="fn">now</span>())
+        -><span class="fn">orderBy</span>(<span class="str">'starts_at'</span>)
+        -><span class="fn">take</span>(<span class="str">3</span>)
+        -><span class="fn">get</span>();
+
+    <span class="kw">return</span> <span class="fn">view</span>(<span class="str">'dashboard'</span>, <span class="fn">compact</span>(<span class="str">'nextAppointments'</span>));
+})-><span class="fn">middleware</span>([<span class="str">'auth'</span>, <span class="str">'verified'</span>])-><span class="fn">name</span>(<span class="str">'dashboard'</span>);</code></pre>
+    </div>
+
+    <!-- PAGE: APPOINTMENTS -->
+    <div class="page" id="page-appointments">
+        <div class="page-eyebrow">04 — Fonctionnalités</div>
+        <h1>Rendez-<em>vous</em></h1>
+        <p class="lead">CRUD complet sur les rendez-vous. Chaque commercial ne voit et ne modifie que ses propres données.</p>
+
+        <h2>Routes disponibles</h2>
+        <div class="route-row">
+            <span class="method method-get">GET</span>
+            <span class="route-path">/appointments</span>
+            <span class="route-desc">Liste de tous les RDV du commercial</span>
+        </div>
+        <div class="route-row">
+            <span class="method method-get">GET</span>
+            <span class="route-path">/appointments/create</span>
+            <span class="route-desc">Formulaire de création</span>
+        </div>
+        <div class="route-row">
+            <span class="method method-post">POST</span>
+            <span class="route-path">/appointments</span>
+            <span class="route-desc">Enregistrement d'un nouveau RDV</span>
+        </div>
+        <div class="route-row">
+            <span class="method method-get">GET</span>
+            <span class="route-path">/appointments/{id}/edit</span>
+            <span class="route-desc">Formulaire de modification</span>
+        </div>
+        <div class="route-row">
+            <span class="method method-put">PUT</span>
+            <span class="route-path">/appointments/{id}</span>
+            <span class="route-desc">Mise à jour du RDV</span>
+        </div>
+        <div class="route-row">
+            <span class="method method-delete">DELETE</span>
+            <span class="route-path">/appointments/{id}</span>
+            <span class="route-desc">Suppression du RDV</span>
+        </div>
+
+        <h2>Validation des champs</h2>
+        <table>
+            <thead><tr><th>Champ</th><th>Règles</th><th>Obligatoire</th></tr></thead>
+            <tbody>
+                <tr><td><code>client_name</code></td><td>string, max:255</td><td><span class="badge badge-red">Oui</span></td></tr>
+                <tr><td><code>starts_at</code></td><td>date, futur recommandé</td><td><span class="badge badge-red">Oui</span></td></tr>
+                <tr><td><code>notes</code></td><td>string, nullable</td><td><span class="badge badge-gray">Non</span></td></tr>
+            </tbody>
+        </table>
+
+        <h2>Isolation des données</h2>
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Filtrage par user_id</div>
+            <p>Chaque requête filtre automatiquement par <code>user_id = auth()->id()</code>. Un commercial ne peut pas accéder aux RDV d'un autre. Le contrôleur vérifie également l'ownership avant toute modification avec <code>abort_unless()</code>.</p>
+        </div>
+    </div>
+
+    <!-- PAGE: PRODUITS -->
+    <div class="page" id="page-products">
+        <div class="page-eyebrow">05 — Fonctionnalités</div>
+        <h1>Catalogue <em>Produits</em></h1>
+        <p class="lead">Page de consultation du catalogue InfoTools. Accessible à tous les commerciaux authentifiés.</p>
+
+        <h2>Produits disponibles</h2>
+        <table>
+            <thead><tr><th>Produit</th><th>Prix</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td>InfoTools CRM Web</td><td>59,00 €</td><td>Portail CRM pour commerciaux</td></tr>
+                <tr><td>InfoTools CRM Manager</td><td>129,00 €</td><td>CRM complet pour managers</td></tr>
+                <tr><td>Module Facturation</td><td>39,00 €</td><td>Gestion et suivi des factures</td></tr>
+                <tr><td>Module Gestion de stock</td><td>49,00 €</td><td>Produits + stock entrées/sorties</td></tr>
+                <tr><td>Audit & Traçabilité</td><td>19,00 €</td><td>Journalisation des actions</td></tr>
+                <tr><td>Dimensionnement Infrastructure</td><td>399,00 €</td><td>Étude CPU/RAM/stockage</td></tr>
+                <tr><td>Mise en place Infrastructure</td><td>799,00 €</td><td>Installation serveur + réseau</td></tr>
+                <tr><td>Maintenance & Support</td><td>149,00 €/mois</td><td>Support + correctifs</td></tr>
+            </tbody>
+        </table>
+
+        <h2>Implémentation</h2>
+        <pre><code><span class="cm">// ProductController.php</span>
+<span class="kw">public function</span> <span class="fn">index</span>()
+{
+    $products = Product::<span class="fn">orderBy</span>(<span class="str">'name'</span>)-><span class="fn">get</span>();
+    <span class="kw">return</span> <span class="fn">view</span>(<span class="str">'products.index'</span>, <span class="fn">compact</span>(<span class="str">'products'</span>));
+}</code></pre>
+
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Données de test</div>
+            <p>Les produits sont insérés via le <code>DatabaseSeeder</code> en utilisant le <code>ProductFactory</code> qui pioche dans un catalogue prédéfini de 8 produits représentatifs d'InfoTools.</p>
+        </div>
+    </div>
+
+    <!-- PAGE: CLIENTS -->
+    <div class="page" id="page-clients">
+        <div class="page-eyebrow">06 — Fonctionnalités</div>
+        <h1>Clients & <em>Achats</em></h1>
+        <p class="lead">Répertoire des clients avec historique d'achats filtré. Chaque commercial ne voit que les achats qu'il a lui-même enregistrés.</p>
+
+        <h2>Routes disponibles</h2>
+        <div class="route-row">
+            <span class="method method-get">GET</span>
+            <span class="route-path">/clients</span>
+            <span class="route-desc">Liste de tous les clients</span>
+        </div>
+        <div class="route-row">
+            <span class="method method-get">GET</span>
+            <span class="route-path">/clients/{id}/purchases</span>
+            <span class="route-desc">Historique d'achats d'un client (filtré par commercial)</span>
+        </div>
+
+        <h2>Protection IDOR</h2>
+        <div class="security-item">
+            <div class="security-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+                <div class="security-title">Filtrage par user_id sur les achats</div>
+                <div class="security-desc">Un commercial connecté ne peut voir que les achats <em>qu'il a lui-même créés</em> pour un client. Même si l'URL est connue, les achats d'un autre commercial n'apparaissent jamais.</div>
+            </div>
+        </div>
+
+        <pre><code><span class="cm">// ClientController.php</span>
+<span class="kw">public function</span> <span class="fn">purchases</span>(Client $client, Request $request)
+{
+    $purchases = $client-><span class="fn">purchases</span>()
+        -><span class="fn">where</span>(<span class="str">'user_id'</span>, $request-><span class="fn">user</span>()-><span class="fn">id</span>) <span class="cm">// ← IDOR protection</span>
+        -><span class="fn">with</span>(<span class="str">'product'</span>)
+        -><span class="fn">orderByDesc</span>(<span class="str">'purchased_at'</span>)
+        -><span class="fn">get</span>();
+
+    <span class="kw">return</span> <span class="fn">view</span>(<span class="str">'clients.purchases'</span>, <span class="fn">compact</span>(<span class="str">'client'</span>, <span class="str">'purchases'</span>));
+}</code></pre>
+
+        <h2>Données affichées — Achats</h2>
+        <table>
+            <thead><tr><th>Colonne</th><th>Source</th></tr></thead>
+            <tbody>
+                <tr><td>Date</td><td><code>purchases.purchased_at</code></td></tr>
+                <tr><td>Produit</td><td><code>product.name</code> (relation eager load)</td></tr>
+                <tr><td>Quantité</td><td><code>purchases.quantity</code></td></tr>
+                <tr><td>Notes</td><td><code>purchases.notes</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGE: API -->
+    <div class="page" id="page-api">
+        <div class="page-eyebrow">07 — Technique</div>
+        <h1>API <em>REST</em></h1>
+        <p class="lead">API sécurisée par tokens Sanctum. Destinée aux applications mobiles et à l'application lourde C# du projet InfoTools.</p>
+
+        <h2>Authentification</h2>
+        <div class="route-row">
+            <span class="method method-post">POST</span>
+            <span class="route-path">/api/login</span>
+            <span class="route-desc">Retourne un token Sanctum</span>
+        </div>
+
+        <pre><code><span class="cm">// Requête</span>
+{
+  <span class="str">"email"</span>: <span class="str">"commercial@infotools.fr"</span>,
+  <span class="str">"password"</span>: <span class="str">"password"</span>
+}
+
+<span class="cm">// Réponse</span>
+{
+  <span class="str">"token"</span>: <span class="str">"1|abc123..."</span>
+}</code></pre>
+
+        <h2>Endpoints protégés</h2>
+        <p>Toutes ces routes nécessitent le header <code>Authorization: Bearer {token}</code></p>
+
+        <div class="route-row">
+            <span class="method method-get">GET</span>
+            <span class="route-path">/api/products</span>
+            <span class="route-desc">Liste des produits</span>
+        </div>
+        <div class="route-row">
+            <span class="method method-post">POST</span>
+            <span class="route-path">/api/purchases</span>
+            <span class="route-desc">Créer un achat</span>
+        </div>
+        <div class="route-row">
+            <span class="method method-get">GET</span>
+            <span class="route-path">/api/clients/{id}/purchases</span>
+            <span class="route-desc">Achats d'un client (IDOR protégé)</span>
+        </div>
+        <div class="route-row">
+            <span class="method method-delete">DELETE</span>
+            <span class="route-path">/api/purchases/{id}</span>
+            <span class="route-desc">Supprimer un achat</span>
+        </div>
+
+        <h2>Throttling</h2>
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Limitation de débit</div>
+            <p>Le endpoint <code>/api/login</code> est limité à <strong>10 tentatives par minute</strong> via le middleware <code>throttle:10,1</code>. Retourne HTTP <code>429</code> en cas de dépassement.</p>
+        </div>
+    </div>
+
+    <!-- PAGE: SÉCURITÉ -->
+    <div class="page" id="page-security">
+        <div class="page-eyebrow">08 — Sécurité</div>
+        <h1>Mesures de <em>sécurité</em></h1>
+        <p class="lead">Plusieurs couches de sécurité ont été implémentées conformément aux exigences du cahier des charges.</p>
+
+        <h2>Protections implémentées</h2>
+
+        <div class="security-item">
+            <div class="security-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+                <div class="security-title">Protection IDOR</div>
+                <div class="security-desc">Chaque requête sur les données sensibles (appointments, purchases) filtre par <code>user_id = auth()->id()</code>. Un commercial ne peut jamais accéder aux données d'un autre, même en connaissant l'URL.</div>
+            </div>
+        </div>
+
+        <div class="security-item">
+            <div class="security-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div>
+                <div class="security-title">Authentification Sanctum</div>
+                <div class="security-desc">L'API utilise des tokens personnels Sanctum. L'interface web utilise les sessions Laravel avec protection CSRF sur tous les formulaires.</div>
+            </div>
+        </div>
+
+        <div class="security-item">
+            <div class="security-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            </div>
+            <div>
+                <div class="security-title">Throttling API</div>
+                <div class="security-desc">Le login API est limité à 10 requêtes/minute. Empêche les attaques par force brute sur les credentials.</div>
+            </div>
+        </div>
+
+        <div class="security-item">
+            <div class="security-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div>
+                <div class="security-title">Audit Logs</div>
+                <div class="security-desc">Chaque action sensible (création/suppression d'achat) génère une entrée dans la table <code>audit_logs</code> avec <code>user_id</code>, <code>action</code>, <code>entity_type</code>, <code>entity_id</code> et un champ <code>meta</code> JSON.</div>
+            </div>
+        </div>
+
+        <div class="security-item">
+            <div class="security-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div>
+                <div class="security-title">Validation serveur</div>
+                <div class="security-desc">Tous les champs sont validés côté serveur via <code>FormRequest</code> ou <code>$request->validate()</code>. Les tentatives d'injection ou de XSS retournent HTTP 422.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE: INSTALLATION -->
+    <div class="page" id="page-install">
+        <div class="page-eyebrow">09 — Déploiement</div>
+        <h1>Guide d'<em>installation</em></h1>
+        <p class="lead">Procédure complète pour déployer l'application en local ou sur le serveur SISR.</p>
+
+        <h2>Prérequis</h2>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Environnement</div>
+                <p>PHP 8.4+, Composer, Node.js 18+, MySQL 5.7+</p>
+            </div>
+            <div class="card">
+                <div class="card-title"><span class="dot"></span>Recommandé</div>
+                <p>Laravel Herd (Windows/Mac) ou Laravel Valet (Mac/Linux)</p>
+            </div>
+        </div>
+
+        <h2>Installation locale</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-line">
+                    <div class="step-num">1</div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">Cloner le dépôt</div>
+                    <pre><code>git clone https://github.com/whizpixel/web-ap.git
+cd web-ap</code></pre>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-line">
+                    <div class="step-num">2</div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">Installer les dépendances</div>
+                    <pre><code>composer install
+npm install</code></pre>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-line">
+                    <div class="step-num">3</div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">Configurer l'environnement</div>
+                    <pre><code>cp .env.example .env
+php artisan key:generate</code></pre>
+                    <p>Renseigner <code>DB_DATABASE</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code> dans le <code>.env</code></p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-line">
+                    <div class="step-num">4</div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">Migrer et seeder la base</div>
+                    <pre><code>php artisan migrate:fresh --seed</code></pre>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-line">
+                    <div class="step-num">5</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">Lancer les serveurs</div>
+                    <pre><code><span class="cm"># Terminal 1</span>
+php artisan serve
+
+<span class="cm"># Terminal 2</span>
+npm run dev</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <h2>Comptes de test</h2>
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Credentials seedés</div>
+            <p>Le seeder crée 2 commerciaux avec des données fictives. Récupérer leurs emails via :</p>
+            <pre><code>php artisan tinker
+>>> App\Models\User::<span class="fn">all</span>([<span class="str">'id'</span>, <span class="str">'name'</span>, <span class="str">'email'</span>])</code></pre>
+            <p>Mot de passe pour tous les comptes seedés : <code>password</code></p>
+        </div>
+
+        <h2>Migration sur serveur SISR</h2>
+        <div class="card">
+            <div class="card-title"><span class="dot"></span>Déploiement serveur étudiant</div>
+            <p>Modifier le <code>.env</code> avec les credentials du serveur MySQL SISR, puis exécuter :</p>
+            <pre><code>php artisan migrate --force
+php artisan db:seed --force</code></pre>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    function goTo(page) {
+        // Hide all pages
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+        // Show target page
+        document.getElementById('page-' + page).classList.add('active');
+
+        // Activate nav item
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
